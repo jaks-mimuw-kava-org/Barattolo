@@ -1,4 +1,4 @@
-package com.kava.entity;
+package com.kava.manager;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
