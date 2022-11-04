@@ -6,14 +6,31 @@ import javax.persistence.metamodel.Metamodel;
 import java.util.Map;
 
 public class KavaEntityManagerFactory implements EntityManagerFactory {
+    private static final String DRIVER_CLASS_PROPERTY = "driver_class";
+    private static final String URL_PROPERTY = "url";
+    private static final String USERNAME_PROPERTY = "username";
+    private static final String PASSWORD_PROPERTY = "password";
+
+    private boolean isOpen = false;
+
     @Override
     public EntityManager createEntityManager() {
-        throw new UnsupportedOperationException();
+        return createEntityManager(Map.of());
     }
 
     @Override
     public EntityManager createEntityManager(Map map) {
-        throw new UnsupportedOperationException();
+        throwIfClosed();
+
+        ConnectionConfig defaultConnectionConfig = getDefaultConfig();
+        ConnectionConfig finalConnectionConfig = new ConnectionConfig(
+                map.getOrDefault(DRIVER_CLASS_PROPERTY, defaultConnectionConfig.driverClass()).toString(),
+                map.getOrDefault(URL_PROPERTY, defaultConnectionConfig.url()).toString(),
+                map.getOrDefault(USERNAME_PROPERTY, defaultConnectionConfig.username()).toString(),
+                map.getOrDefault(PASSWORD_PROPERTY, defaultConnectionConfig.password()).toString()
+        );
+
+        return new KavaEntityManager(finalConnectionConfig);
     }
 
     @Override
@@ -38,12 +55,12 @@ public class KavaEntityManagerFactory implements EntityManagerFactory {
 
     @Override
     public boolean isOpen() {
-        throw new UnsupportedOperationException();
+        return isOpen;
     }
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException();
+        isOpen = false;
     }
 
     @Override
@@ -74,5 +91,16 @@ public class KavaEntityManagerFactory implements EntityManagerFactory {
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
         throw new UnsupportedOperationException();
+    }
+
+    private ConnectionConfig getDefaultConfig() {
+        // TODO: read config from xml file.
+        return new ConnectionConfig("todo", "todo", "todo", "todo");
+    }
+
+    private void throwIfClosed() {
+        if (!isOpen()) {
+            throw new IllegalStateException("The factory is closed.");
+        }
     }
 }

@@ -10,6 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 public class KavaEntityManager implements EntityManager {
+    private final ConnectionConfig connectionConfig;
+
+    public KavaEntityManager(ConnectionConfig connectionConfig) {
+        this.connectionConfig = connectionConfig;
+    }
+
     @Override
     public void persist(Object entity) {
         throw new UnsupportedOperationException();
