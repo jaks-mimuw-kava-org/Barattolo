@@ -6,6 +6,11 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +33,18 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public void remove(Object entity) {
-        throw new UnsupportedOperationException();
+        IdField idField = getIdField(entity);
+        String idFieldName = idField.name();
+        String idValue = idField.value();
+        String tableName = entity.getClass().getSimpleName();
+
+        String query = "DELETE FROM %s WHERE %s = '%s'".formatted(tableName, idFieldName, idValue);
+
+        try {
+            executeUpdateQuery(query);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -269,5 +285,35 @@ public class KavaEntityManager implements EntityManager {
     @Override
     public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> entityClass) {
         throw new UnsupportedOperationException();
+    }
+
+    private IdField getIdField(Object object) {
+        for (Field field : object.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(Id.class)) {
+                String fieldName = field.getName();
+                String fieldValue;
+                try {
+                    fieldValue = field.get(object).toString();
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+
+                return new IdField(fieldName, fieldValue);
+            }
+        }
+
+        throw new IllegalArgumentException("Argument has no id field!");
+    }
+
+    private void executeUpdateQuery(String query) throws SQLException {
+        Connection connection = DriverManager.getConnection(
+                connectionConfig.url(), connectionConfig.username(), connectionConfig.password()
+        );
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(query);
+        connection.close();
+    }
+
+    private record IdField(String name, String value) {
     }
 }

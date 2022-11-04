@@ -11,7 +11,7 @@ public class KavaEntityManagerFactory implements EntityManagerFactory {
     private static final String USERNAME_PROPERTY = "username";
     private static final String PASSWORD_PROPERTY = "password";
 
-    private boolean isOpen = false;
+    private boolean isOpen = true;
 
     @Override
     public EntityManager createEntityManager() {
