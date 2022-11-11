@@ -290,6 +290,7 @@ public class KavaEntityManager implements EntityManager {
     private IdField getIdField(Object object) {
         for (Field field : object.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(Id.class)) {
+                field.setAccessible(true);
                 String fieldName = field.getName();
                 String fieldValue;
                 try {

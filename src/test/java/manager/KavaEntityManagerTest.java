@@ -53,8 +53,8 @@ public class KavaEntityManagerTest {
         // then
         List<TestEntity> results = getFromDatabase();
         assert results.size() == 1;
-        assert Objects.equals(results.get(0).id, testEntity2.id);
-        assert Objects.equals(results.get(0).name, testEntity2.name);
+        assert Objects.equals(results.get(0).getId(), testEntity2.getId());
+        assert Objects.equals(results.get(0).getName(), testEntity2.getName());
     }
 
     private void addToDatabase(TestEntity testEntity) {

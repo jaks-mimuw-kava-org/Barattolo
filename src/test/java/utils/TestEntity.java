@@ -6,8 +6,8 @@ import javax.persistence.Id;
 @Entity
 public class TestEntity {
     @Id
-    public Long id;
-    public String name;
+    private Long id;
+    private String name;
 
     public TestEntity() {
     }
