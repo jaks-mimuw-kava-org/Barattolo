@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class KavaEntityManagerTest {
-    private static final String TEST_URL_PROPERTY = "jdbc:postgresql://localhost/test";
+    private static final String TEST_URL_PROPERTY =
+            "jdbc:tc:postgresql:14.6:///test?TC_INITSCRIPT=file:src/test/resources/init_postgres.sql";
     private static final String TEST_USERNAME_PROPERTY = "admin";
     private static final String TEST_PASSWORD_PROPERTY = "admin";
 
