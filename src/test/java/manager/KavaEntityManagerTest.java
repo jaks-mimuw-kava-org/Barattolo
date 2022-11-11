@@ -3,39 +3,24 @@ package manager;
 import com.kava.manager.KavaEntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import utils.DatabaseAbility;
 import utils.TestEntity;
 
 import javax.persistence.EntityManager;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class KavaEntityManagerTest {
-    private static final String TEST_URL_PROPERTY =
-            "jdbc:tc:postgresql:14.6:///test?TC_INITSCRIPT=file:src/test/resources/init_postgres.sql";
-    private static final String TEST_USERNAME_PROPERTY = "admin";
-    private static final String TEST_PASSWORD_PROPERTY = "admin";
-
+public class KavaEntityManagerTest extends DatabaseAbility {
     private final EntityManager entityManager = new KavaEntityManagerFactory().createEntityManager(
-            Map.of("url", TEST_URL_PROPERTY,
-                    "username", TEST_USERNAME_PROPERTY,
-                    "password", TEST_PASSWORD_PROPERTY)
+            Map.of("url", getTestUrl(),
+                    "username", getTestUsername(),
+                    "password", getTestPassword())
     );
 
     @AfterEach
     void cleanUp() {
-        String query = "DELETE FROM TestEntity";
-        try {
-            Connection connection = DriverManager.getConnection(
-                    TEST_URL_PROPERTY, TEST_USERNAME_PROPERTY, TEST_PASSWORD_PROPERTY
-            );
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        cleanTable("TestEntity");
     }
 
     @Test
@@ -55,43 +40,5 @@ public class KavaEntityManagerTest {
         assert results.size() == 1;
         assert Objects.equals(results.get(0).getId(), testEntity2.getId());
         assert Objects.equals(results.get(0).getName(), testEntity2.getName());
-    }
-
-    private void addToDatabase(TestEntity testEntity) {
-        String query = "INSERT INTO TestEntity(id, name) VALUES (%d, '%s')"
-                .formatted(testEntity.getId(), testEntity.getName());
-        try {
-            Connection connection = DriverManager.getConnection(
-                    TEST_URL_PROPERTY, TEST_USERNAME_PROPERTY, TEST_PASSWORD_PROPERTY
-            );
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private List<TestEntity> getFromDatabase() {
-        String query = "SELECT * FROM TestEntity";
-        List<TestEntity> entities = new ArrayList<>();
-
-        try {
-            Connection connection = DriverManager.getConnection(
-                    TEST_URL_PROPERTY, TEST_USERNAME_PROPERTY, TEST_PASSWORD_PROPERTY
-            );
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
-
-            while (resultSet.next()) {
-                TestEntity entity = new TestEntity();
-                entity.setId(resultSet.getLong("id"));
-                entity.setName(resultSet.getString("name"));
-                entities.add(entity);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return entities;
     }
 }
