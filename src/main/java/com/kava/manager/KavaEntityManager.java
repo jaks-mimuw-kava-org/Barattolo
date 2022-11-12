@@ -2,6 +2,7 @@ package com.kava.manager;
 
 import com.kava.entity.EntityWrapper;
 import com.kava.query.DeleteQueryBuilder;
+import com.kava.query.InsertQueryBuilder;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -25,7 +26,18 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public void persist(Object entity) {
-        throw new UnsupportedOperationException();
+        EntityWrapper entityWrapper = new EntityWrapper(entity);
+
+        try {
+            Connection connection = getConnection();
+            PreparedStatement statement = new InsertQueryBuilder()
+                    .withTable(entityWrapper.getTableName())
+                    .withEntity(entityWrapper)
+                    .build(connection);
+            statement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
