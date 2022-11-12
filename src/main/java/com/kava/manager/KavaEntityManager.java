@@ -1,16 +1,18 @@
 package com.kava.manager;
 
+import com.kava.entity.EntityWrapper;
+import com.kava.query.DeleteQueryBuilder;
+
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -33,15 +35,15 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public void remove(Object entity) {
-        IdField idField = getIdField(entity);
-        String idFieldName = idField.name();
-        String idValue = idField.value();
-        String tableName = entity.getClass().getSimpleName();
-
-        String query = "DELETE FROM %s WHERE %s = '%s'".formatted(tableName, idFieldName, idValue);
+        EntityWrapper entityWrapper = new EntityWrapper(entity);
 
         try {
-            executeUpdateQuery(query);
+            Connection connection = getConnection();
+            PreparedStatement statement = new DeleteQueryBuilder()
+                    .withTable(entityWrapper.getTableName())
+                    .withPrimaryKeyFields(entityWrapper.getPrimaryKeyFields())
+                    .build(connection);
+            statement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -287,34 +289,9 @@ public class KavaEntityManager implements EntityManager {
         throw new UnsupportedOperationException();
     }
 
-    private IdField getIdField(Object object) {
-        for (Field field : object.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(Id.class)) {
-                field.setAccessible(true);
-                String fieldName = field.getName();
-                String fieldValue;
-                try {
-                    fieldValue = field.get(object).toString();
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-                return new IdField(fieldName, fieldValue);
-            }
-        }
-
-        throw new IllegalArgumentException("Argument has no id field!");
-    }
-
-    private void executeUpdateQuery(String query) throws SQLException {
-        Connection connection = DriverManager.getConnection(
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
                 connectionConfig.url(), connectionConfig.username(), connectionConfig.password()
         );
-        Statement statement = connection.createStatement();
-        statement.executeUpdate(query);
-        connection.close();
-    }
-
-    private record IdField(String name, String value) {
     }
 }
