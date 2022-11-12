@@ -41,4 +41,20 @@ public class KavaEntityManagerTest extends DatabaseAbility {
         assert Objects.equals(results.get(0).getId(), testEntity2.getId());
         assert Objects.equals(results.get(0).getName(), testEntity2.getName());
     }
+
+    @Test
+    public void testPersist() {
+        // given
+        assert getFromDatabase().size() == 0;
+        TestEntity testEntity1 = new TestEntity(1L, "name1");
+
+        // when
+        entityManager.persist(testEntity1);
+
+        // then
+        List<TestEntity> results = getFromDatabase();
+        assert results.size() == 1;
+        assert Objects.equals(results.get(0).getId(), testEntity1.getId());
+        assert Objects.equals(results.get(0).getName(), testEntity1.getName());
+    }
 }
