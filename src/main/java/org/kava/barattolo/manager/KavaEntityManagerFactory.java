@@ -1,4 +1,4 @@
-package org.kava.manager;
+package org.kava.barattolo.manager;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;

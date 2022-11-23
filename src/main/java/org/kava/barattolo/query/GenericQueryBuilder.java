@@ -1,4 +1,4 @@
-package org.kava.query;
+package org.kava.barattolo.query;
 
 import java.util.List;
 

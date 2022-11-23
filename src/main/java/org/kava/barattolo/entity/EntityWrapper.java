@@ -1,4 +1,4 @@
-package org.kava.entity;
+package org.kava.barattolo.entity;
 
 import javax.persistence.Id;
 import java.lang.reflect.Field;

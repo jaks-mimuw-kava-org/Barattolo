@@ -1,11 +1,11 @@
-package org.kava.manager;
+package org.kava.barattolo.manager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.kava.entity.EntityField;
-import org.kava.entity.EntityWrapper;
-import org.kava.query.DeleteQueryBuilder;
-import org.kava.query.InsertQueryBuilder;
-import org.kava.query.SelectQueryBuilder;
+import org.kava.barattolo.entity.EntityField;
+import org.kava.barattolo.entity.EntityWrapper;
+import org.kava.barattolo.query.DeleteQueryBuilder;
+import org.kava.barattolo.query.InsertQueryBuilder;
+import org.kava.barattolo.query.SelectQueryBuilder;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;

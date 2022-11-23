@@ -1,6 +1,6 @@
-package org.kava.query;
+package org.kava.barattolo.query;
 
-import org.kava.entity.EntityField;
+import org.kava.barattolo.entity.EntityField;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,18 +8,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectQueryBuilder {
+public class DeleteQueryBuilder {
     private String tableName = null;
     private final List<EntityField> primaryKeyFields = new ArrayList<>();
-    private final List<String> selectFields = List.of("*");
 
-    public SelectQueryBuilder withTable(String tableName) {
+    public DeleteQueryBuilder withTable(String tableName) {
         this.tableName = tableName;
         return this;
     }
 
-    public SelectQueryBuilder withPrimaryKeyField(EntityField field) {
-        this.primaryKeyFields.add(field);
+    public DeleteQueryBuilder withPrimaryKeyFields(List<EntityField> fields) {
+        primaryKeyFields.addAll(fields);
         return this;
     }
 
@@ -30,7 +29,7 @@ public class SelectQueryBuilder {
             throw new IllegalStateException("Primary key must be specified!");
         }
 
-        GenericQueryBuilder queryBuilder = new GenericQueryBuilder().withSelect(selectFields, tableName);
+        GenericQueryBuilder queryBuilder = new GenericQueryBuilder().withDelete(tableName);
         for (EntityField pk : primaryKeyFields) {
             queryBuilder = queryBuilder.withWhere(pk.name(), "?");
         }
