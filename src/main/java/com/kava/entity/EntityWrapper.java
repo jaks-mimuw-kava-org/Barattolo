@@ -29,6 +29,13 @@ public class EntityWrapper {
                 .toList();
     }
 
+    public static <T> List<EntityField> getEntityClassPrimaryKeyFields(Class<T> entityClass) {
+        return Arrays.stream(entityClass.getDeclaredFields())
+                .map(field -> toEntityField(field, null))
+                .filter(EntityField::isPrimaryKey)
+                .collect(Collectors.toList());
+    }
+
     private static List<EntityField> generateEntityFields(Object entity) {
         return Arrays.stream(entity.getClass().getDeclaredFields())
                 .map(field -> toEntityField(field, entity))
@@ -42,7 +49,7 @@ public class EntityWrapper {
             return new EntityField(
                     field.getName(),
                     field.getDeclaringClass(),
-                    field.get(entity),
+                    entity == null ? null : field.get(entity),
                     field.isAnnotationPresent(Id.class)
             );
         } catch (IllegalAccessException e) {

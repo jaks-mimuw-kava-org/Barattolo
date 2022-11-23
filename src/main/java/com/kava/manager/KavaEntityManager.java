@@ -1,8 +1,11 @@
 package com.kava.manager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kava.entity.EntityField;
 import com.kava.entity.EntityWrapper;
 import com.kava.query.DeleteQueryBuilder;
 import com.kava.query.InsertQueryBuilder;
+import com.kava.query.SelectQueryBuilder;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -10,10 +13,9 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.lang.reflect.Field;
+import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,12 +65,36 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public <T> T find(Class<T> entityClass, Object primaryKey) {
-        throw new UnsupportedOperationException();
+        return find(entityClass, primaryKey, Map.of());
     }
 
     @Override
     public <T> T find(Class<T> entityClass, Object primaryKey, Map<String, Object> properties) {
-        throw new UnsupportedOperationException();
+        String tableName = entityClass.getSimpleName();
+        String primaryKeyFieldName = EntityWrapper.getEntityClassPrimaryKeyFields(entityClass).get(0).name();
+        EntityField primaryKeyField = new EntityField(primaryKeyFieldName, Object.class, primaryKey, true);
+
+        Map<String, Object> fieldsToValue = new HashMap<>();
+
+        try {
+            Connection connection = getConnection();
+            PreparedStatement statement = new SelectQueryBuilder()
+                    .withTable(tableName)
+                    .withPrimaryKeyField(primaryKeyField)
+                    .build(connection);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                for (Field field : entityClass.getDeclaredFields()) {
+                    fieldsToValue.put(field.getName(), resultSet.getObject(field.getName()));
+                }
+
+                return new ObjectMapper().convertValue(fieldsToValue, entityClass);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

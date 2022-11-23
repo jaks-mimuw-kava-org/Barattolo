@@ -32,18 +32,14 @@ public class InsertQueryBuilder {
 
         List<EntityField> fields = entityWrapper.getFields();
         List<String> fieldNames = fields.stream().map(EntityField::name).toList();
-        String initialQuery = "INSERT INTO %s(%s) VALUES(%s)".formatted(
-                tableName,
-                String.join(",", fieldNames),
-                String.join(",", Collections.nCopies(fields.size(), "?"))
-        );
-        System.out.println(initialQuery);
+        String query = new GenericQueryBuilder()
+                .withInsert(tableName, fieldNames, Collections.nCopies(fields.size(), "?"))
+                .build();
 
         try {
-            PreparedStatement statement = connection.prepareStatement(initialQuery);
+            PreparedStatement statement = connection.prepareStatement(query);
             for (int i = 0; i < fields.size(); i++) {
                 statement.setObject(i + 1, fields.get(i).value());
-                System.out.println(statement);
             }
             return statement;
         } catch (SQLException e) {

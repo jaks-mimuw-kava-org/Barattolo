@@ -2,6 +2,7 @@ package manager;
 
 import com.kava.manager.KavaEntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utils.ComplexTestEntity;
 import utils.DatabaseAbility;
@@ -11,7 +12,6 @@ import javax.persistence.EntityManager;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class KavaEntityManagerTest extends DatabaseAbility {
     private final EntityManager entityManager = new KavaEntityManagerFactory().createEntityManager(
@@ -42,8 +42,8 @@ public class KavaEntityManagerTest extends DatabaseAbility {
 
         // then
         List<SimpleTestEntity> results = getSimpleEntitiesFromDatabase();
-        assert results.size() == 1;
-        assert Objects.equals(results.get(0), simpleTestEntity2);
+        Assertions.assertEquals(1, results.size());
+        Assertions.assertEquals(simpleTestEntity2, results.get(0));
     }
 
     @Test
@@ -57,8 +57,8 @@ public class KavaEntityManagerTest extends DatabaseAbility {
 
         // then
         List<ComplexTestEntity> results = getComplexEntitiesFromDatabase();
-        assert results.size() == 1;
-        assert Objects.equals(results.get(0), complexTestEntity2);
+        Assertions.assertEquals(1, results.size());
+        Assertions.assertEquals(complexTestEntity2, results.get(0));
     }
 
     @Test
@@ -71,8 +71,8 @@ public class KavaEntityManagerTest extends DatabaseAbility {
 
         // then
         List<SimpleTestEntity> results = getSimpleEntitiesFromDatabase();
-        assert results.size() == 1;
-        assert Objects.equals(results.get(0), simpleTestEntity1);
+        Assertions.assertEquals(1, results.size());
+        Assertions.assertEquals(simpleTestEntity1, results.get(0));
     }
 
     @Test
@@ -85,7 +85,37 @@ public class KavaEntityManagerTest extends DatabaseAbility {
 
         // then
         List<ComplexTestEntity> results = getComplexEntitiesFromDatabase();
-        assert results.size() == 1;
-        assert Objects.equals(results.get(0), complexTestEntity1);
+        Assertions.assertEquals(1, results.size());
+        Assertions.assertEquals(complexTestEntity1, results.get(0));
+    }
+
+    @Test
+    public void testSimpleFind() {
+        // given
+        addToDatabase(simpleTestEntity1);
+        addToDatabase(simpleTestEntity2);
+
+        // when
+        SimpleTestEntity foundEntity1 = entityManager.find(SimpleTestEntity.class, 1L);
+        SimpleTestEntity foundEntity2 = entityManager.find(SimpleTestEntity.class, 2L);
+
+        // then
+        Assertions.assertEquals(simpleTestEntity1, foundEntity1);
+        Assertions.assertEquals(simpleTestEntity2, foundEntity2);
+    }
+
+    @Test
+    public void testComplexFind() {
+        // given
+        addToDatabase(complexTestEntity1);
+        addToDatabase(complexTestEntity2);
+
+        // when
+        ComplexTestEntity foundEntity1 = entityManager.find(ComplexTestEntity.class, "name1");
+        ComplexTestEntity foundEntity2 = entityManager.find(ComplexTestEntity.class, "name2");
+
+        // then
+        Assertions.assertEquals(complexTestEntity1, foundEntity1);
+        Assertions.assertEquals(complexTestEntity2, foundEntity2);
     }
 }
