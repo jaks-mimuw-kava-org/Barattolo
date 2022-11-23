@@ -1,6 +1,6 @@
-package com.kava.query;
+package org.kava.query;
 
-import com.kava.entity.EntityField;
+import org.kava.entity.EntityField;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

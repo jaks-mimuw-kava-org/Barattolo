@@ -1,6 +1,6 @@
 package manager;
 
-import com.kava.manager.KavaEntityManagerFactory;
+import org.kava.manager.KavaEntityManagerFactory;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;

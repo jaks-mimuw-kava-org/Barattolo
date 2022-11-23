@@ -1,11 +1,11 @@
-package com.kava.manager;
+package org.kava.manager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kava.entity.EntityField;
-import com.kava.entity.EntityWrapper;
-import com.kava.query.DeleteQueryBuilder;
-import com.kava.query.InsertQueryBuilder;
-import com.kava.query.SelectQueryBuilder;
+import org.kava.entity.EntityField;
+import org.kava.entity.EntityWrapper;
+import org.kava.query.DeleteQueryBuilder;
+import org.kava.query.InsertQueryBuilder;
+import org.kava.query.SelectQueryBuilder;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;

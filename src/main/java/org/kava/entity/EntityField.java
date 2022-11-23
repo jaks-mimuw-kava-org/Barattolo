@@ -1,4 +1,4 @@
-package com.kava.entity;
+package org.kava.entity;
 
 public record EntityField(
         String name,

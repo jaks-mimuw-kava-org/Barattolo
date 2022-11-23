@@ -1,4 +1,4 @@
-package com.kava.query;
+package org.kava.query;
 
 import java.util.List;
 

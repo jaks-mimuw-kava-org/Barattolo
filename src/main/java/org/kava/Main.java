@@ -1,4 +1,4 @@
-package com.kava;
+package org.kava;
 
 public class Main {
     public static void main(String[] args) {

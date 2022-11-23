@@ -1,6 +1,6 @@
 package query;
 
-import com.kava.query.GenericQueryBuilder;
+import org.kava.query.GenericQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
