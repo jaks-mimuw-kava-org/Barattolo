@@ -6,6 +6,9 @@ import org.kava.barattolo.entity.EntityWrapper;
 import org.kava.barattolo.query.DeleteQueryBuilder;
 import org.kava.barattolo.query.InsertQueryBuilder;
 import org.kava.barattolo.query.SelectQueryBuilder;
+import org.kava.lungo.Level;
+import org.kava.lungo.Logger;
+import org.kava.lungo.LoggerFactory;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -21,6 +24,7 @@ import java.util.Map;
 
 public class KavaEntityManager implements EntityManager {
     private final ConnectionConfig connectionConfig;
+    private final Logger logger = LoggerFactory.getLogger(KavaEntityManager.class, Level.DEBUG);
 
     public KavaEntityManager(ConnectionConfig connectionConfig) {
         this.connectionConfig = connectionConfig;
@@ -31,13 +35,15 @@ public class KavaEntityManager implements EntityManager {
         EntityWrapper entityWrapper = new EntityWrapper(entity);
 
         try {
-            Connection connection = getConnection();
+            Connection connection = createConnection();
             PreparedStatement statement = new InsertQueryBuilder()
                     .withTable(entityWrapper.getTableName())
                     .withEntity(entityWrapper)
                     .build(connection);
+            logQuery(statement.toString());
             statement.execute();
         } catch (SQLException e) {
+            logSqlException(e);
             throw new RuntimeException(e);
         }
     }
@@ -52,13 +58,15 @@ public class KavaEntityManager implements EntityManager {
         EntityWrapper entityWrapper = new EntityWrapper(entity);
 
         try {
-            Connection connection = getConnection();
+            Connection connection = createConnection();
             PreparedStatement statement = new DeleteQueryBuilder()
                     .withTable(entityWrapper.getTableName())
                     .withPrimaryKeyFields(entityWrapper.getPrimaryKeyFields())
                     .build(connection);
             statement.execute();
+            logQuery(statement.toString());
         } catch (SQLException e) {
+            logSqlException(e);
             throw new RuntimeException(e);
         }
     }
@@ -77,11 +85,12 @@ public class KavaEntityManager implements EntityManager {
         Map<String, Object> fieldsToValue = new HashMap<>();
 
         try {
-            Connection connection = getConnection();
+            Connection connection = createConnection();
             PreparedStatement statement = new SelectQueryBuilder()
                     .withTable(tableName)
                     .withPrimaryKeyField(primaryKeyField)
                     .build(connection);
+            logQuery(statement.toString());
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 for (Field field : entityClass.getDeclaredFields()) {
@@ -93,6 +102,7 @@ public class KavaEntityManager implements EntityManager {
                 return null;
             }
         } catch (SQLException e) {
+            logSqlException(e);
             throw new RuntimeException(e);
         }
     }
@@ -327,9 +337,18 @@ public class KavaEntityManager implements EntityManager {
         throw new UnsupportedOperationException();
     }
 
-    private Connection getConnection() throws SQLException {
+    private Connection createConnection() throws SQLException {
+        logger.debug("Creating a new connection to database with url: %s", connectionConfig.url());
         return DriverManager.getConnection(
                 connectionConfig.url(), connectionConfig.username(), connectionConfig.password()
         );
+    }
+
+    private void logQuery(String query) {
+        logger.debug("Executing query: %s", query);
+    }
+
+    private void logSqlException(SQLException exception) {
+        logger.error("Encountered an SqlException: %s", exception);
     }
 }
