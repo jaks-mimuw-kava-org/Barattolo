@@ -34,12 +34,11 @@ public class KavaEntityManager implements EntityManager {
     public void persist(Object entity) {
         EntityWrapper entityWrapper = new EntityWrapper(entity);
 
-        try {
-            Connection connection = createConnection();
-            PreparedStatement statement = new InsertQueryBuilder()
-                    .withTable(entityWrapper.getTableName())
-                    .withEntity(entityWrapper)
-                    .build(connection);
+        try (Connection connection = createConnection();
+             PreparedStatement statement = new InsertQueryBuilder()
+                     .withTable(entityWrapper.getTableName())
+                     .withEntity(entityWrapper)
+                     .build(connection)) {
             logQuery(statement.toString());
             statement.execute();
         } catch (SQLException e) {
@@ -57,12 +56,11 @@ public class KavaEntityManager implements EntityManager {
     public void remove(Object entity) {
         EntityWrapper entityWrapper = new EntityWrapper(entity);
 
-        try {
-            Connection connection = createConnection();
-            PreparedStatement statement = new DeleteQueryBuilder()
-                    .withTable(entityWrapper.getTableName())
-                    .withPrimaryKeyFields(entityWrapper.getPrimaryKeyFields())
-                    .build(connection);
+        try (Connection connection = createConnection();
+             PreparedStatement statement = new DeleteQueryBuilder()
+                     .withTable(entityWrapper.getTableName())
+                     .withPrimaryKeyFields(entityWrapper.getPrimaryKeyFields())
+                     .build(connection)) {
             statement.execute();
             logQuery(statement.toString());
         } catch (SQLException e) {
@@ -84,12 +82,11 @@ public class KavaEntityManager implements EntityManager {
 
         Map<String, Object> fieldsToValue = new HashMap<>();
 
-        try {
-            Connection connection = createConnection();
-            PreparedStatement statement = new SelectQueryBuilder()
-                    .withTable(tableName)
-                    .withPrimaryKeyField(primaryKeyField)
-                    .build(connection);
+        try (Connection connection = createConnection();
+             PreparedStatement statement = new SelectQueryBuilder()
+                     .withTable(tableName)
+                     .withPrimaryKeyField(primaryKeyField)
+                     .build(connection)) {
             logQuery(statement.toString());
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
