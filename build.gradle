@@ -2,11 +2,17 @@ plugins {
     id 'java'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'org.kava'
+version '1.0.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+private void createReleaseTag() {
+    def tagName = "release/${project.version}"
+    ("git tag $tagName").execute()
+    ("git push --tags").execute()
 }
 
 dependencies {
