@@ -1,18 +1,13 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'pl.allegro.tech.build.axion-release' version '1.14.0'
 }
 
 group 'org.kava'
-version '1.0.0-SNAPSHOT'
+project.version = scmVersion.version
 
 repositories {
     mavenCentral()
-}
-
-private void createReleaseTag() {
-    def tagName = "release/${project.version}"
-    ("git tag $tagName").execute()
-    ("git push --tags").execute()
 }
 
 dependencies {
