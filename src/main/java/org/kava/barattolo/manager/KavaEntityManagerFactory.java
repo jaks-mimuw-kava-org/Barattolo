@@ -1,17 +1,32 @@
 package org.kava.barattolo.manager;
 
-import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnitUtil;
+import jakarta.persistence.Query;
+import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.metamodel.Metamodel;
+import org.kava.barattolo.config.ConnectionConfig;
+import org.kava.barattolo.config.DriverConfig;
+import org.kava.barattolo.config.ManagedClassesConfig;
+
 import java.util.Map;
 
 public class KavaEntityManagerFactory implements EntityManagerFactory {
-    private static final String DRIVER_CLASS_PROPERTY = "driver_class";
-    private static final String URL_PROPERTY = "url";
-    private static final String USERNAME_PROPERTY = "username";
-    private static final String PASSWORD_PROPERTY = "password";
-
+    private final DriverConfig driverConfig;
+    private final ConnectionConfig connectionConfig;
+    private final ManagedClassesConfig managedClassesConfig;
     private boolean isOpen = true;
+
+    public KavaEntityManagerFactory(DriverConfig driverConfig, ConnectionConfig connectionConfig,
+                                    ManagedClassesConfig managedClassesConfig) {
+        this.driverConfig = driverConfig;
+        this.connectionConfig = connectionConfig;
+        this.managedClassesConfig = managedClassesConfig;
+    }
 
     @Override
     public EntityManager createEntityManager() {
@@ -22,15 +37,7 @@ public class KavaEntityManagerFactory implements EntityManagerFactory {
     public EntityManager createEntityManager(Map map) {
         throwIfClosed();
 
-        ConnectionConfig defaultConnectionConfig = getDefaultConfig();
-        ConnectionConfig finalConnectionConfig = new ConnectionConfig(
-                map.getOrDefault(DRIVER_CLASS_PROPERTY, defaultConnectionConfig.driverClass()).toString(),
-                map.getOrDefault(URL_PROPERTY, defaultConnectionConfig.url()).toString(),
-                map.getOrDefault(USERNAME_PROPERTY, defaultConnectionConfig.username()).toString(),
-                map.getOrDefault(PASSWORD_PROPERTY, defaultConnectionConfig.password()).toString()
-        );
-
-        return new KavaEntityManager(finalConnectionConfig);
+        return new KavaEntityManager(connectionConfig, managedClassesConfig);
     }
 
     @Override
@@ -91,11 +98,6 @@ public class KavaEntityManagerFactory implements EntityManagerFactory {
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
         throw new UnsupportedOperationException();
-    }
-
-    private ConnectionConfig getDefaultConfig() {
-        // TODO: read config from xml file.
-        return new ConnectionConfig("todo", "todo", "todo", "todo");
     }
 
     private void throwIfClosed() {

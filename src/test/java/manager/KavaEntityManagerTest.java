@@ -1,5 +1,6 @@
 package manager;
 
+import jakarta.persistence.EntityManager;
 import org.kava.barattolo.manager.KavaEntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -8,13 +9,12 @@ import utils.ComplexTestEntity;
 import utils.DatabaseAbility;
 import utils.SimpleTestEntity;
 
-import javax.persistence.EntityManager;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
 public class KavaEntityManagerTest extends DatabaseAbility {
-    private final EntityManager entityManager = new KavaEntityManagerFactory().createEntityManager(
+    private final EntityManager entityManager = new KavaEntityManagerFactory(driverConfig, connectionConfig, persistenceConfig).createEntityManager(
             Map.of("url", getTestUrl(),
                     "username", getTestUsername(),
                     "password", getTestPassword())
