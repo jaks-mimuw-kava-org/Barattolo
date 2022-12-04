@@ -26,7 +26,11 @@ public class PersistenceUnitXMLParser {
     private static ParsedXMLPersistenceInfo parseXml(String filePath) {
         logger.debug("Starting to parse %s persistence file.", filePath);
         try (FileReader fileReader = new FileReader(filePath)) {
-            JAXBContext context = JAXBContext.newInstance(ParsedXMLPersistenceInfo.class);
+            JAXBContext context = JAXBContext.newInstance(
+                    ParsedXMLPersistenceInfo.class,
+                    ParsedXMLPersistenceUnitInfo.class,
+                    ParsedXMLPersistenceUnitProperty.class
+            );
             return (ParsedXMLPersistenceInfo) context.createUnmarshaller().unmarshal(fileReader);
         } catch (JAXBException | IOException e) {
             throw new RuntimeException(e);
@@ -46,10 +50,8 @@ public class PersistenceUnitXMLParser {
     }
 
     private static PersistenceUnitInfo transform(ParsedXMLPersistenceUnitInfo xmlPersistenceUnitInfo) {
-
         Properties properties = new Properties();
         Map<String, Object> propertyMap = xmlPersistenceUnitInfo
-                .getProperties()
                 .getProperties()
                 .stream()
                 .collect(Collectors.toMap(

@@ -17,6 +17,9 @@ public class ParsedXMLPersistenceUnitProperty {
         this.value = value;
     }
 
+    public ParsedXMLPersistenceUnitProperty() {
+    }
+
     public String getName() {
         return name;
     }

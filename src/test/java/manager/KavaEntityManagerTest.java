@@ -1,24 +1,25 @@
 package manager;
 
 import jakarta.persistence.EntityManager;
-import org.kava.barattolo.manager.KavaEntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.kava.barattolo.config.ConnectionConfig;
+import org.kava.barattolo.config.ManagedClassesConfig;
+import org.kava.barattolo.manager.KavaEntityManager;
 import utils.ComplexTestEntity;
 import utils.DatabaseAbility;
 import utils.SimpleTestEntity;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Map;
 
 public class KavaEntityManagerTest extends DatabaseAbility {
-    private final EntityManager entityManager = new KavaEntityManagerFactory(driverConfig, connectionConfig, persistenceConfig).createEntityManager(
-            Map.of("url", getTestUrl(),
-                    "username", getTestUsername(),
-                    "password", getTestPassword())
+    private final ConnectionConfig connectionConfig = new ConnectionConfig(
+            TEST_URL_PROPERTY, TEST_USERNAME_PROPERTY, TEST_PASSWORD_PROPERTY
     );
+    private final ManagedClassesConfig managedClassesConfig = new ManagedClassesConfig(TEST_MANAGED_CLASSES);
+    private final EntityManager entityManager = new KavaEntityManager(connectionConfig, managedClassesConfig);
 
     SimpleTestEntity simpleTestEntity1 = new SimpleTestEntity(1L, "name1");
     SimpleTestEntity simpleTestEntity2 = new SimpleTestEntity(2L, "name2");

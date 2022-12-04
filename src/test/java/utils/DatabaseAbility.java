@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseAbility {
-    private static final String TEST_URL_PROPERTY =
+    protected static final String TEST_DRIVER_CLASS = "org.testcontainers.jdbc.ContainerDatabaseDriver";
+    protected static final String TEST_URL_PROPERTY =
             "jdbc:tc:postgresql:14.6:///test?TC_INITSCRIPT=file:src/test/resources/init_postgres.sql";
-    private static final String TEST_USERNAME_PROPERTY = "admin";
-    private static final String TEST_PASSWORD_PROPERTY = "admin";
+    protected static final String TEST_USERNAME_PROPERTY = "admin";
+    protected static final String TEST_PASSWORD_PROPERTY = "admin";
+    protected static final List<String> TEST_MANAGED_CLASSES = List.of(
+            "utils.SimpleTestEntity", "utils.ComplexTestEntity"
+    );
 
     protected String getTestUrl() {
         return TEST_URL_PROPERTY;

@@ -1,6 +1,7 @@
 package org.kava.barattolo.entity;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
