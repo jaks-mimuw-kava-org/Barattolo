@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Properties;
 
 public class KavaPersistenceUnitInfo implements PersistenceUnitInfo {
-    private String persistenceUnitName;
-    private List<String> managedClassNames;
-    private Properties properties;
+    private final String persistenceUnitName;
+    private final List<String> managedClassNames;
+    private final Properties properties;
 
     public KavaPersistenceUnitInfo(String persistenceUnitName, List<String> managedClassNames, Properties properties) {
         this.persistenceUnitName = persistenceUnitName;
@@ -25,7 +25,7 @@ public class KavaPersistenceUnitInfo implements PersistenceUnitInfo {
 
     @Override
     public String getPersistenceUnitName() {
-        return null;
+        return persistenceUnitName;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class KavaPersistenceUnitInfo implements PersistenceUnitInfo {
 
     @Override
     public List<String> getManagedClassNames() {
-        return null;
+        return managedClassNames;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class KavaPersistenceUnitInfo implements PersistenceUnitInfo {
 
     @Override
     public Properties getProperties() {
-        return null;
+        return properties;
     }
 
     @Override

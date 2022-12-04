@@ -8,7 +8,9 @@ import java.util.List;
 public class KavaPersistenceProviderResolver implements PersistenceProviderResolver {
     @Override
     public List<PersistenceProvider> getPersistenceProviders() {
-        throw new UnsupportedOperationException();
+        return List.of(
+                new KavaPersistenceProvider()
+        );
     }
 
     @Override
