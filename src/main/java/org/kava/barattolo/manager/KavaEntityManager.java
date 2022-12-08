@@ -39,6 +39,8 @@ import java.util.Map;
 public class KavaEntityManager implements EntityManager {
     private final ConnectionConfig connectionConfig;
     private final ManagedClassesConfig managedClassesConfig;
+    private EntityTransaction currentTransaction = new KavaEntityTransaction();
+    private boolean isOpen = true;
     private final Logger logger = LoggerFactory.getLogger(KavaEntityManager.class, Level.DEBUG);
 
     public KavaEntityManager(ConnectionConfig connectionConfig, ManagedClassesConfig managedClassesConfig) {
@@ -302,17 +304,18 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException();
+        // TODO: throw in other methods if closed.
+        isOpen = false;
     }
 
     @Override
     public boolean isOpen() {
-        throw new UnsupportedOperationException();
+        return isOpen;
     }
 
     @Override
     public EntityTransaction getTransaction() {
-        throw new UnsupportedOperationException();
+        return currentTransaction;
     }
 
     @Override

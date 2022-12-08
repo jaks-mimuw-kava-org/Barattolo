@@ -16,7 +16,7 @@ import java.util.Map;
 import static org.kava.barattolo.spi.KavaPersistenceUnitProperty.*;
 
 public class KavaPersistenceProvider implements PersistenceProvider {
-    private static final String PERSISTENCE_FILE_PATH = "src/main/resources/META_INF/persistence.xml";
+    private static final String PERSISTENCE_FILE_PATH = "src/main/resources/META-INF/persistence.xml";
 
     @Override
     public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
