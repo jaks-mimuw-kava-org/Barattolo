@@ -1,5 +1,5 @@
 CREATE TABLE SimpleTestEntity(
-id SERIAL PRIMARY KEY,
+id BIGINT PRIMARY KEY,
 name varchar(50)
 );
 

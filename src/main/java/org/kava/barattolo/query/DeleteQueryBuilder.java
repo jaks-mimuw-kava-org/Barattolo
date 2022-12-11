@@ -31,7 +31,7 @@ public class DeleteQueryBuilder {
 
         GenericQueryBuilder queryBuilder = new GenericQueryBuilder().withDelete(tableName);
         for (EntityField pk : primaryKeyFields) {
-            queryBuilder = queryBuilder.withWhere(pk.name(), "?");
+            queryBuilder = queryBuilder.withWhere(pk.fieldDefinition().tableFieldName(), "?");
         }
         String query = queryBuilder.build();
 

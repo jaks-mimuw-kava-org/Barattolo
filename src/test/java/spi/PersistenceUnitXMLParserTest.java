@@ -13,7 +13,6 @@ public class PersistenceUnitXMLParserTest {
         String persistenceFilePath = "src/test/resources/META-INF/persistence.xml";
         String persistenceUnitName = "org.kava.test";
 
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
         // when
         PersistenceUnitInfo persistenceUnitInfo = PersistenceUnitXMLParser
                 .parse(persistenceFilePath, persistenceUnitName);

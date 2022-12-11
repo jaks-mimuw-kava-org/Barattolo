@@ -31,7 +31,7 @@ public class InsertQueryBuilder {
         }
 
         List<EntityField> fields = entityWrapper.getFields();
-        List<String> fieldNames = fields.stream().map(EntityField::name).toList();
+        List<String> fieldNames = fields.stream().map(field -> field.fieldDefinition().tableFieldName()).toList();
         String query = new GenericQueryBuilder()
                 .withInsert(tableName, fieldNames, Collections.nCopies(fields.size(), "?"))
                 .build();
