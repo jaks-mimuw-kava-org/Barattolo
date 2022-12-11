@@ -1,5 +1,6 @@
 package utils;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -9,6 +10,7 @@ import java.sql.Date;
 public class ComplexTestEntity {
     @Id
     private String name;
+    @Column(name = "last")
     private String lastName;
     private Long height;
     private int age;
