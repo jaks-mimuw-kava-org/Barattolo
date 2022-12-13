@@ -32,7 +32,7 @@ public class SelectQueryBuilder {
 
         GenericQueryBuilder queryBuilder = new GenericQueryBuilder().withSelect(selectFields, tableName);
         for (EntityField pk : primaryKeyFields) {
-            queryBuilder = queryBuilder.withWhere(pk.name(), "?");
+            queryBuilder = queryBuilder.withWhere(pk.fieldDefinition().tableFieldName(), "?");
         }
         String query = queryBuilder.build();
 

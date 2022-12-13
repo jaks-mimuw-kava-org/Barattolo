@@ -44,7 +44,7 @@ public class DatabaseAbility {
     }
 
     protected void addToDatabase(ComplexTestEntity complexTestEntity) {
-        String query = ("INSERT INTO ComplexTestEntity(name, lastName, height, age, lastLogin) " +
+        String query = ("INSERT INTO ComplexTestEntity(name, last, height, age, lastLogin) " +
                 "VALUES ('%s', '%s', %d, %d, '%s')")
                 .formatted(complexTestEntity.getName(), complexTestEntity.getLastName(), complexTestEntity.getHeight(),
                         complexTestEntity.getAge(), complexTestEntity.getLastLogin().toString());
@@ -91,7 +91,7 @@ public class DatabaseAbility {
             while (resultSet.next()) {
                 ComplexTestEntity entity = new ComplexTestEntity(
                         resultSet.getString("name"),
-                        resultSet.getString("lastName"),
+                        resultSet.getString("last"),
                         resultSet.getLong("height"),
                         resultSet.getInt("age"),
                         resultSet.getDate("lastLogin")

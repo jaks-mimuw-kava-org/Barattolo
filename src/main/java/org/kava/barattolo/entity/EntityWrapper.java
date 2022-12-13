@@ -1,23 +1,27 @@
 package org.kava.barattolo.entity;
 
-import jakarta.persistence.Id;
-
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class EntityWrapper {
     private final List<EntityField> fields;
-    private final String entityName;
+    private final Class<?> entityClass;
 
     public EntityWrapper(Object entity) {
         fields = generateEntityFields(entity);
-        entityName = entity.getClass().getSimpleName();
+        entityClass = entity.getClass();
+    }
+
+    public EntityWrapper(Class<?> entityClass, List<EntityField> fields) {
+        this.fields = fields;
+        this.entityClass = entityClass;
     }
 
     public String getTableName() {
-        return entityName;
+        return entityClass.getSimpleName();
     }
 
     public List<EntityField> getFields() {
@@ -26,15 +30,23 @@ public class EntityWrapper {
 
     public List<EntityField> getPrimaryKeyFields() {
         return getFields().stream()
-                .filter(EntityField::isPrimaryKey)
+                .filter(field -> field.fieldDefinition().isPrimaryKey())
                 .toList();
     }
 
-    public static <T> List<EntityField> getEntityClassPrimaryKeyFields(Class<T> entityClass) {
-        return Arrays.stream(entityClass.getDeclaredFields())
-                .map(field -> toEntityField(field, null))
-                .filter(EntityField::isPrimaryKey)
-                .collect(Collectors.toList());
+    public Object toObject() {
+        try {
+            Object mappedObject = entityClass.getConstructor().newInstance();
+            for (EntityField field : fields) {
+                field.fieldDefinition().field().setAccessible(true);
+                field.fieldDefinition().field().set(mappedObject, field.value());
+            }
+
+            return mappedObject;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static List<EntityField> generateEntityFields(Object entity) {
@@ -47,12 +59,8 @@ public class EntityWrapper {
         field.setAccessible(true);
 
         try {
-            return new EntityField(
-                    field.getName(),
-                    field.getDeclaringClass(),
-                    entity == null ? null : field.get(entity),
-                    field.isAnnotationPresent(Id.class)
-            );
+            EntityFieldDefinition fieldDefinition = EntityFieldDefinition.of(field);
+            return fieldDefinition.withValue(field.get(entity));
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
