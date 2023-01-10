@@ -1,37 +1,36 @@
 package org.kava.barattolo.query;
 
-import org.kava.barattolo.entity.EntityField;
-import org.kava.barattolo.entity.EntityWrapper;
+import org.kava.barattolo.entity.database.DatabaseField;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class InsertQueryBuilder {
     private String tableName = null;
-    private EntityWrapper entityWrapper = null;
+    private List<DatabaseField> fields = new ArrayList<>();
 
     public InsertQueryBuilder withTable(String tableName) {
         this.tableName = tableName;
         return this;
     }
 
-    public InsertQueryBuilder withEntity(EntityWrapper entityWrapper) {
-        this.entityWrapper = entityWrapper;
+    public InsertQueryBuilder withFields(List<DatabaseField> fields) {
+        this.fields.addAll(fields);
         return this;
     }
 
     public PreparedStatement build(Connection connection) {
         if (tableName == null) {
             throw new IllegalStateException("Table name must be specified!");
-        } else if (entityWrapper == null) {
-            throw new IllegalStateException("Inserting entity must be specified!");
+        } else if (fields.isEmpty()) {
+            throw new IllegalStateException("Fields must be specified!");
         }
 
-        List<EntityField> fields = entityWrapper.getFields();
-        List<String> fieldNames = fields.stream().map(field -> field.fieldDefinition().tableFieldName()).toList();
+        List<String> fieldNames = fields.stream().map(field -> field.fieldDefinition().name()).toList();
         String query = new GenericQueryBuilder()
                 .withInsert(tableName, fieldNames, Collections.nCopies(fields.size(), "?"))
                 .build();

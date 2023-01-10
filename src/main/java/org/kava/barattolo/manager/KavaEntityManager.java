@@ -1,14 +1,6 @@
 package org.kava.barattolo.manager;
 
-import jakarta.persistence.EntityGraph;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.FlushModeType;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.Query;
-import jakarta.persistence.StoredProcedureQuery;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -16,10 +8,11 @@ import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.metamodel.Metamodel;
 import org.kava.barattolo.config.ConnectionConfig;
 import org.kava.barattolo.config.ManagedClassesConfig;
-import org.kava.barattolo.entity.EntityClassWrapper;
-import org.kava.barattolo.entity.EntityField;
-import org.kava.barattolo.entity.EntityFieldDefinition;
-import org.kava.barattolo.entity.EntityWrapper;
+import org.kava.barattolo.entity.database.DatabaseEntity;
+import org.kava.barattolo.entity.database.DatabaseEntityDefinition;
+import org.kava.barattolo.entity.database.DatabaseField;
+import org.kava.barattolo.entity.database.DatabaseFieldDefinition;
+import org.kava.barattolo.entity.mappers.DatabaseObjectMapper;
 import org.kava.barattolo.query.DeleteQueryBuilder;
 import org.kava.barattolo.query.InsertQueryBuilder;
 import org.kava.barattolo.query.SelectQueryBuilder;
@@ -27,11 +20,7 @@ import org.kava.lungo.Level;
 import org.kava.lungo.Logger;
 import org.kava.lungo.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,12 +39,12 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public void persist(Object entity) {
-        EntityWrapper entityWrapper = new EntityWrapper(entity);
+        DatabaseEntity databaseEntity = DatabaseEntity.of(entity);
 
         try (Connection connection = createConnection();
              PreparedStatement statement = new InsertQueryBuilder()
-                     .withTable(entityWrapper.getTableName())
-                     .withEntity(entityWrapper)
+                     .withTable(databaseEntity.tableName())
+                     .withFields(databaseEntity.fields())
                      .build(connection)) {
             logQuery(statement.toString());
             statement.execute();
@@ -72,12 +61,12 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public void remove(Object entity) {
-        EntityWrapper entityWrapper = new EntityWrapper(entity);
+        DatabaseEntity databaseEntity = DatabaseEntity.of(entity);
 
         try (Connection connection = createConnection();
              PreparedStatement statement = new DeleteQueryBuilder()
-                     .withTable(entityWrapper.getTableName())
-                     .withPrimaryKeyFields(entityWrapper.getPrimaryKeyFields())
+                     .withTable(databaseEntity.tableName())
+                     .withPrimaryKey(databaseEntity.getPrimaryKey())
                      .build(connection)) {
             statement.execute();
             logQuery(statement.toString());
@@ -94,24 +83,32 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public <T> T find(Class<T> entityClass, Object primaryKey, Map<String, Object> properties) {
-        EntityClassWrapper entityClassWrapper = new EntityClassWrapper(entityClass);
-        EntityField primaryKeyField = entityClassWrapper.getPrimaryKeyFields().get(0).withValue(primaryKey);
-        List<EntityField> foundEntityFields = new ArrayList<>();
+        DatabaseEntityDefinition databaseEntityDefinition = DatabaseEntityDefinition.of(entityClass);
+        DatabaseField primaryKeyField = databaseEntityDefinition
+                .getPrimaryKey()
+                .withValue(primaryKey);
+        List<DatabaseField> foundDatabaseFields = new ArrayList<>();
 
         try (Connection connection = createConnection();
              PreparedStatement statement = new SelectQueryBuilder()
-                     .withTable(entityClassWrapper.getTableName())
+                     .withTable(databaseEntityDefinition.tableName())
                      .withPrimaryKeyField(primaryKeyField)
                      .build(connection)) {
             logQuery(statement.toString());
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                for (EntityFieldDefinition fieldDefinition : entityClassWrapper.getFieldDefinitions()) {
-                    Object resultValue = resultSet.getObject(fieldDefinition.tableFieldName());
-                    foundEntityFields.add(fieldDefinition.withValue(resultValue));
+                for (DatabaseFieldDefinition databaseFieldDefinition : databaseEntityDefinition.fields()) {
+                    Object resultFieldDatabaseValue = resultSet.getObject(databaseFieldDefinition.name());
+                    foundDatabaseFields.add(
+                            databaseFieldDefinition.withValue(resultFieldDatabaseValue)
+                    );
                 }
-                Object resultObject = new EntityWrapper(entityClass, foundEntityFields).toObject();
-                return (T) resultObject;
+                DatabaseEntity databaseEntity = new DatabaseEntity(
+                        databaseEntityDefinition.tableName(),
+                        foundDatabaseFields
+                );
+
+               return (T) DatabaseObjectMapper.map(databaseEntity, entityClass).toObject();
             } else {
                 return null;
             }
