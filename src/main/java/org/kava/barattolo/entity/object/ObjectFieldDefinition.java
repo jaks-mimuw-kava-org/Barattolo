@@ -15,6 +15,10 @@ public record ObjectFieldDefinition(
         return new ObjectFieldDefinition(field, retrieveFieldName(field), retrieveFieldType(field));
     }
 
+    public Class<?> getFieldClass() {
+        return field.getType();
+    }
+
     public ObjectField withValue(Object value) {
         return new ObjectField(this, value);
     }

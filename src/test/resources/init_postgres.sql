@@ -8,5 +8,6 @@ name varchar(255) PRIMARY KEY,
 last varchar(255),
 height BIGINT,
 age INT,
-lastLogin DATE
+lastLogin DATE,
+simple_test_entity BIGINT
 );

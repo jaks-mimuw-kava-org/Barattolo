@@ -23,8 +23,8 @@ public class KavaEntityManagerTest extends DatabaseAbility {
 
     SimpleTestEntity simpleTestEntity1 = new SimpleTestEntity(1L, "name1");
     SimpleTestEntity simpleTestEntity2 = new SimpleTestEntity(2L, "name2");
-    ComplexTestEntity complexTestEntity1 = new ComplexTestEntity("name1", "lastName1", 11L, 1, Date.valueOf("2022-11-11"));
-    ComplexTestEntity complexTestEntity2 = new ComplexTestEntity("name2", "lastName2", 22L, 2, Date.valueOf("2022-11-22"));
+    ComplexTestEntity complexTestEntity1 = new ComplexTestEntity("name1", "lastName1", 11L, 1, Date.valueOf("2022-11-11"), simpleTestEntity1);
+    ComplexTestEntity complexTestEntity2 = new ComplexTestEntity("name2", "lastName2", 22L, 2, Date.valueOf("2022-11-22"), simpleTestEntity2);
 
     @AfterEach
     void cleanUp() {
@@ -50,6 +50,8 @@ public class KavaEntityManagerTest extends DatabaseAbility {
     @Test
     public void testComplexRemove() {
         // given
+        addToDatabase(simpleTestEntity1);
+        addToDatabase(simpleTestEntity2);
         addToDatabase(complexTestEntity1);
         addToDatabase(complexTestEntity2);
 
@@ -108,6 +110,8 @@ public class KavaEntityManagerTest extends DatabaseAbility {
     @Test
     public void testComplexFind() {
         // given
+        addToDatabase(simpleTestEntity1);
+        addToDatabase(simpleTestEntity2);
         addToDatabase(complexTestEntity1);
         addToDatabase(complexTestEntity2);
 
@@ -118,5 +122,9 @@ public class KavaEntityManagerTest extends DatabaseAbility {
         // then
         Assertions.assertEquals(complexTestEntity1, foundEntity1);
         Assertions.assertEquals(complexTestEntity2, foundEntity2);
+
+        System.out.println("After assertions");
+        System.out.println(foundEntity1.getSimpleTestEntity().getName());
+        System.out.println(foundEntity1.getSimpleTestEntity().getId());
     }
 }

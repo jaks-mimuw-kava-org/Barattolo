@@ -1,8 +1,6 @@
 package utils;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.sql.Date;
 
@@ -15,13 +13,17 @@ public class ComplexTestEntity {
     private Long height;
     private int age;
     private Date lastLogin;
+    @Column(name = "simple_test_entity")
+    @ManyToOne
+    private SimpleTestEntity simpleTestEntity;
 
-    public ComplexTestEntity(String name, String lastName, Long height, int age, Date lastLogin) {
+    public ComplexTestEntity(String name, String lastName, Long height, int age, Date lastLogin, SimpleTestEntity simpleTestEntity) {
         this.name = name;
         this.lastName = lastName;
         this.height = height;
         this.age = age;
         this.lastLogin = lastLogin;
+        this.simpleTestEntity = simpleTestEntity;
     }
 
     public ComplexTestEntity() {
@@ -74,5 +76,13 @@ public class ComplexTestEntity {
         ComplexTestEntity that = (ComplexTestEntity) o;
         return getAge() == that.getAge() && getName().equals(that.getName()) && getLastName().equals(that.getLastName())
                 && getHeight().equals(that.getHeight()) && getLastLogin().equals(that.getLastLogin());
+    }
+
+    public SimpleTestEntity getSimpleTestEntity() {
+        return simpleTestEntity;
+    }
+
+    public void setSimpleTestEntity(SimpleTestEntity simpleTestEntity) {
+        this.simpleTestEntity = simpleTestEntity;
     }
 }
