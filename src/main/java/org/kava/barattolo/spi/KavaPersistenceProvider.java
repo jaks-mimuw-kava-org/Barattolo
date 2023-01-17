@@ -10,6 +10,7 @@ import org.kava.barattolo.config.ManagedClassesConfig;
 import org.kava.barattolo.manager.KavaEntityManagerFactory;
 import org.kava.barattolo.spi.util.KavaPersistenceUnitInfoBuilder;
 import org.kava.barattolo.spi.util.xml.PersistenceUnitXMLParser;
+import org.kava.lungo.Level;
 
 import java.util.Map;
 
@@ -74,11 +75,15 @@ public class KavaPersistenceProvider implements PersistenceProvider {
         ManagedClassesConfig managedClassesConfig = new ManagedClassesConfig(
                 persistenceUnitInfo.getManagedClassNames()
         );
+        Level loggerLevel = Level.valueOf(
+                persistenceUnitInfo.getProperties().getProperty(LOGGER_LEVEL_PROPERTY_NAME.name)
+        );
 
         return new KavaEntityManagerFactory(
                 driverConfig,
                 connectionConfig,
-                managedClassesConfig
+                managedClassesConfig,
+                loggerLevel
         );
     }
 }

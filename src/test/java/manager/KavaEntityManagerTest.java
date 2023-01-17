@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.kava.barattolo.config.ConnectionConfig;
 import org.kava.barattolo.config.ManagedClassesConfig;
 import org.kava.barattolo.manager.KavaEntityManager;
+import org.kava.lungo.Level;
 import utils.ComplexTestEntity;
 import utils.DatabaseAbility;
 import utils.SimpleTestEntity;
@@ -19,7 +20,7 @@ public class KavaEntityManagerTest extends DatabaseAbility {
             TEST_URL_PROPERTY, TEST_USERNAME_PROPERTY, TEST_PASSWORD_PROPERTY
     );
     private final ManagedClassesConfig managedClassesConfig = new ManagedClassesConfig(TEST_MANAGED_CLASSES);
-    private final EntityManager entityManager = new KavaEntityManager(connectionConfig, managedClassesConfig);
+    private final EntityManager entityManager = new KavaEntityManager(connectionConfig, managedClassesConfig, Level.DEBUG);
 
     SimpleTestEntity simpleTestEntity1 = new SimpleTestEntity(1L, "name1");
     SimpleTestEntity simpleTestEntity2 = new SimpleTestEntity(2L, "name2");

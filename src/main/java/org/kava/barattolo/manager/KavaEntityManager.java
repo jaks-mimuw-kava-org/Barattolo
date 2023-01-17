@@ -30,11 +30,14 @@ public class KavaEntityManager implements EntityManager {
     private final ManagedClassesConfig managedClassesConfig;
     private EntityTransaction currentTransaction = new KavaEntityTransaction();
     private boolean isOpen = true;
-    private final Logger logger = LoggerFactory.getLogger(KavaEntityManager.class, Level.DEBUG);
+    private final Logger logger;
 
-    public KavaEntityManager(ConnectionConfig connectionConfig, ManagedClassesConfig managedClassesConfig) {
+    public KavaEntityManager(ConnectionConfig connectionConfig,
+                             ManagedClassesConfig managedClassesConfig,
+                             Level loggerLevel) {
         this.connectionConfig = connectionConfig;
         this.managedClassesConfig = managedClassesConfig;
+        this.logger = LoggerFactory.getLogger(KavaEntityManager.class, loggerLevel);
     }
 
     @Override
