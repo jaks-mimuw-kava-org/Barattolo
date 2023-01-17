@@ -84,6 +84,9 @@ public class KavaEntityManagerTest extends DatabaseAbility {
         // given
         assert getComplexEntitiesFromDatabase().size() == 0;
 
+        // and
+        addToDatabase(simpleTestEntity1);
+
         // when
         entityManager.persist(complexTestEntity1);
 
