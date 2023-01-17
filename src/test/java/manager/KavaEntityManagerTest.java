@@ -125,10 +125,12 @@ public class KavaEntityManagerTest extends DatabaseAbility {
 
         // then
         Assertions.assertEquals(complexTestEntity1, foundEntity1);
-        Assertions.assertEquals(complexTestEntity2, foundEntity2);
 
-        System.out.println("After assertions");
-        System.out.println(foundEntity1.getSimpleTestEntity().getName());
-        System.out.println(foundEntity1.getSimpleTestEntity().getId());
+        // and
+        Assertions.assertEquals(complexTestEntity2.getName(), foundEntity2.getName());
+
+        // and
+        System.out.println("Comparing simple test entities");
+        Assertions.assertEquals(complexTestEntity2.getSimpleTestEntity(), foundEntity2.getSimpleTestEntity());
     }
 }

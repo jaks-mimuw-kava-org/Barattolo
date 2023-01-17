@@ -3,6 +3,7 @@ package utils;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.Objects;
 
 @Entity
 public class ComplexTestEntity {
@@ -69,20 +70,26 @@ public class ComplexTestEntity {
         this.lastLogin = lastLogin;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ComplexTestEntity that = (ComplexTestEntity) o;
-        return getAge() == that.getAge() && getName().equals(that.getName()) && getLastName().equals(that.getLastName())
-                && getHeight().equals(that.getHeight()) && getLastLogin().equals(that.getLastLogin());
-    }
-
     public SimpleTestEntity getSimpleTestEntity() {
         return simpleTestEntity;
     }
 
     public void setSimpleTestEntity(SimpleTestEntity simpleTestEntity) {
         this.simpleTestEntity = simpleTestEntity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ComplexTestEntity)) return false;
+        ComplexTestEntity that = (ComplexTestEntity) o;
+        return getAge() == that.getAge() && Objects.equals(getName(), that.getName()) && Objects.equals(getLastName(),
+                that.getLastName()) && Objects.equals(getHeight(), that.getHeight()) && Objects.equals(getLastLogin(),
+                that.getLastLogin()) && Objects.equals(getSimpleTestEntity(), that.getSimpleTestEntity());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getLastName(), getHeight(), getAge(), getLastLogin(), getSimpleTestEntity());
     }
 }
