@@ -10,19 +10,20 @@ import org.kava.lungo.Logger;
 import org.kava.lungo.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.function.Supplier;
 
-public class LazyLoadingProxy {
-    private final Logger logger = LoggerFactory.getLogger(LazyLoadingProxy.class, Level.DEBUG);
+public class LazyLoadingProxyBuilder {
+    private final Logger logger = LoggerFactory.getLogger(LazyLoadingProxyBuilder.class, Level.DEBUG);
 
     public Object getProxy(ObjectFieldDefinition fieldDefinition,
                            Object databaseValue,
                            EntityManager entityManager) { // TODO: it probably shouldn't know about entity manager.
         logger.debug("Getting proxy for type %s with value %s", fieldDefinition.getFieldClass().toString(), databaseValue.toString());
-        LazyLoadingInvocationHandler invocationHandler = new LazyLoadingInvocationHandler(
-                databaseValue, entityManager, fieldDefinition.getFieldClass()
-        );
 
-        // TODO: optimization - once a subclass is generated it doesn't have to be re-generated.
+        Supplier<Object> objectSupplier = () -> entityManager.find(fieldDefinition.getFieldClass(), databaseValue);
+        LazyLoadingInvocationHandler invocationHandler = new LazyLoadingInvocationHandler(objectSupplier);
+
+        // TODO: Once a subclass is generated it doesn't have to be re-generated.
         Class<?> proxyType = new ByteBuddy()
                 .subclass(fieldDefinition.getFieldClass())
                 .method(ElementMatchers.any())

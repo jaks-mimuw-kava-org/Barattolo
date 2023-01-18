@@ -108,11 +108,12 @@ public class KavaEntityManager implements EntityManager {
                 }
                 DatabaseEntity databaseEntity = new DatabaseEntity(
                         databaseEntityDefinition.tableName(),
+                        entityClass,
                         foundDatabaseFields
                 );
 
                 Object foundObject = new DatabaseObjectMapper(this)
-                        .map(databaseEntity, entityClass).toObject();
+                        .map(databaseEntity).toObject();
 
                 return (T) foundObject;
             } else {

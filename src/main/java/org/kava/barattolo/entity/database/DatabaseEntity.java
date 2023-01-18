@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public record DatabaseEntity(String tableName,
+                             Class<?> objectClass,
                              List<DatabaseField> fields) {
     public DatabaseField getPrimaryKey() {
         return fields.stream()
@@ -16,6 +17,7 @@ public record DatabaseEntity(String tableName,
     public static DatabaseEntity of(Object entity) {
         return new DatabaseEntity(
                 retrieveTableName(entity),
+                entity.getClass(),
                 generateDatabaseFields(entity)
         );
     }

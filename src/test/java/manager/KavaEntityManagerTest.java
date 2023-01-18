@@ -124,6 +124,7 @@ public class KavaEntityManagerTest extends DatabaseAbility {
         ComplexTestEntity foundEntity2 = entityManager.find(ComplexTestEntity.class, "name2");
 
         // then
+        System.out.println("Comparing first complex entity.");
         Assertions.assertEquals(complexTestEntity1, foundEntity1);
 
         // and

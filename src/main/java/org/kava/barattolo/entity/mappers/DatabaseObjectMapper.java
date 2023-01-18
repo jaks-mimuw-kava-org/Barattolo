@@ -7,17 +7,18 @@ import org.kava.barattolo.entity.database.DatabaseFieldDefinition;
 import org.kava.barattolo.entity.object.ObjectEntity;
 import org.kava.barattolo.entity.object.ObjectField;
 import org.kava.barattolo.entity.object.ObjectFieldDefinition;
-import org.kava.barattolo.entity.proxy.LazyLoadingProxy;
+import org.kava.barattolo.entity.proxy.LazyLoadingProxyBuilder;
 
 public class DatabaseObjectMapper {
     private final EntityManager entityManager; // TODO: it probably shouldn't know about entity manager.
+
     public DatabaseObjectMapper(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
-    public ObjectEntity map(DatabaseEntity databaseEntity, Class<?> objectClass) {
+    public ObjectEntity map(DatabaseEntity databaseEntity) {
         return new ObjectEntity(
-                objectClass,
+                databaseEntity.objectClass(),
                 databaseEntity.fields().stream().map(this::map).toList()
         );
     }
@@ -38,6 +39,6 @@ public class DatabaseObjectMapper {
     }
 
     private Object getProxy(ObjectFieldDefinition fieldDefinition, Object databaseValue) {
-       return new LazyLoadingProxy().getProxy(fieldDefinition, databaseValue, entityManager);
+        return new LazyLoadingProxyBuilder().getProxy(fieldDefinition, databaseValue, entityManager);
     }
 }
