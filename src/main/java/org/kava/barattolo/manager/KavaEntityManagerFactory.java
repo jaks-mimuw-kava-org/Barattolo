@@ -12,6 +12,7 @@ import jakarta.persistence.metamodel.Metamodel;
 import org.kava.barattolo.config.ConnectionConfig;
 import org.kava.barattolo.config.DriverConfig;
 import org.kava.barattolo.config.ManagedClassesConfig;
+import org.kava.lungo.Level;
 
 import java.util.Map;
 
@@ -19,13 +20,15 @@ public class KavaEntityManagerFactory implements EntityManagerFactory {
     private final DriverConfig driverConfig;
     private final ConnectionConfig connectionConfig;
     private final ManagedClassesConfig managedClassesConfig;
+    private final Level loggerLevel;
     private boolean isOpen = true;
 
     public KavaEntityManagerFactory(DriverConfig driverConfig, ConnectionConfig connectionConfig,
-                                    ManagedClassesConfig managedClassesConfig) {
+                                    ManagedClassesConfig managedClassesConfig, Level loggerLevel) {
         this.driverConfig = driverConfig;
         this.connectionConfig = connectionConfig;
         this.managedClassesConfig = managedClassesConfig;
+        this.loggerLevel = loggerLevel;
     }
 
     @Override
@@ -37,7 +40,7 @@ public class KavaEntityManagerFactory implements EntityManagerFactory {
     public EntityManager createEntityManager(Map map) {
         throwIfClosed();
 
-        return new KavaEntityManager(connectionConfig, managedClassesConfig);
+        return new KavaEntityManager(connectionConfig, managedClassesConfig, loggerLevel);
     }
 
     @Override

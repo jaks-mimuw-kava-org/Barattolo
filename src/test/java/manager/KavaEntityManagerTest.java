@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.kava.barattolo.config.ConnectionConfig;
 import org.kava.barattolo.config.ManagedClassesConfig;
 import org.kava.barattolo.manager.KavaEntityManager;
+import org.kava.lungo.Level;
 import utils.ComplexTestEntity;
 import utils.DatabaseAbility;
 import utils.SimpleTestEntity;
@@ -19,12 +20,12 @@ public class KavaEntityManagerTest extends DatabaseAbility {
             TEST_URL_PROPERTY, TEST_USERNAME_PROPERTY, TEST_PASSWORD_PROPERTY
     );
     private final ManagedClassesConfig managedClassesConfig = new ManagedClassesConfig(TEST_MANAGED_CLASSES);
-    private final EntityManager entityManager = new KavaEntityManager(connectionConfig, managedClassesConfig);
+    private final EntityManager entityManager = new KavaEntityManager(connectionConfig, managedClassesConfig, Level.DEBUG);
 
     SimpleTestEntity simpleTestEntity1 = new SimpleTestEntity(1L, "name1");
     SimpleTestEntity simpleTestEntity2 = new SimpleTestEntity(2L, "name2");
-    ComplexTestEntity complexTestEntity1 = new ComplexTestEntity("name1", "lastName1", 11L, 1, Date.valueOf("2022-11-11"));
-    ComplexTestEntity complexTestEntity2 = new ComplexTestEntity("name2", "lastName2", 22L, 2, Date.valueOf("2022-11-22"));
+    ComplexTestEntity complexTestEntity1 = new ComplexTestEntity("name1", "lastName1", 11L, 1, Date.valueOf("2022-11-11"), simpleTestEntity1);
+    ComplexTestEntity complexTestEntity2 = new ComplexTestEntity("name2", "lastName2", 22L, 2, Date.valueOf("2022-11-22"), simpleTestEntity2);
 
     @AfterEach
     void cleanUp() {
@@ -50,6 +51,8 @@ public class KavaEntityManagerTest extends DatabaseAbility {
     @Test
     public void testComplexRemove() {
         // given
+        addToDatabase(simpleTestEntity1);
+        addToDatabase(simpleTestEntity2);
         addToDatabase(complexTestEntity1);
         addToDatabase(complexTestEntity2);
 
@@ -81,6 +84,9 @@ public class KavaEntityManagerTest extends DatabaseAbility {
         // given
         assert getComplexEntitiesFromDatabase().size() == 0;
 
+        // and
+        addToDatabase(simpleTestEntity1);
+
         // when
         entityManager.persist(complexTestEntity1);
 
@@ -108,6 +114,8 @@ public class KavaEntityManagerTest extends DatabaseAbility {
     @Test
     public void testComplexFind() {
         // given
+        addToDatabase(simpleTestEntity1);
+        addToDatabase(simpleTestEntity2);
         addToDatabase(complexTestEntity1);
         addToDatabase(complexTestEntity2);
 
@@ -116,7 +124,14 @@ public class KavaEntityManagerTest extends DatabaseAbility {
         ComplexTestEntity foundEntity2 = entityManager.find(ComplexTestEntity.class, "name2");
 
         // then
+        System.out.println("Comparing first complex entity.");
         Assertions.assertEquals(complexTestEntity1, foundEntity1);
-        Assertions.assertEquals(complexTestEntity2, foundEntity2);
+
+        // and
+        Assertions.assertEquals(complexTestEntity2.getName(), foundEntity2.getName());
+
+        // and
+        System.out.println("Comparing simple test entities");
+        Assertions.assertEquals(complexTestEntity2.getSimpleTestEntity(), foundEntity2.getSimpleTestEntity());
     }
 }

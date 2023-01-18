@@ -1,10 +1,9 @@
 package utils;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.Objects;
 
 @Entity
 public class ComplexTestEntity {
@@ -15,13 +14,17 @@ public class ComplexTestEntity {
     private Long height;
     private int age;
     private Date lastLogin;
+    @Column(name = "simple_test_entity")
+    @ManyToOne
+    private SimpleTestEntity simpleTestEntity;
 
-    public ComplexTestEntity(String name, String lastName, Long height, int age, Date lastLogin) {
+    public ComplexTestEntity(String name, String lastName, Long height, int age, Date lastLogin, SimpleTestEntity simpleTestEntity) {
         this.name = name;
         this.lastName = lastName;
         this.height = height;
         this.age = age;
         this.lastLogin = lastLogin;
+        this.simpleTestEntity = simpleTestEntity;
     }
 
     public ComplexTestEntity() {
@@ -67,12 +70,26 @@ public class ComplexTestEntity {
         this.lastLogin = lastLogin;
     }
 
+    public SimpleTestEntity getSimpleTestEntity() {
+        return simpleTestEntity;
+    }
+
+    public void setSimpleTestEntity(SimpleTestEntity simpleTestEntity) {
+        this.simpleTestEntity = simpleTestEntity;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ComplexTestEntity)) return false;
         ComplexTestEntity that = (ComplexTestEntity) o;
-        return getAge() == that.getAge() && getName().equals(that.getName()) && getLastName().equals(that.getLastName())
-                && getHeight().equals(that.getHeight()) && getLastLogin().equals(that.getLastLogin());
+        return getAge() == that.getAge() && Objects.equals(getName(), that.getName()) && Objects.equals(getLastName(),
+                that.getLastName()) && Objects.equals(getHeight(), that.getHeight()) && Objects.equals(getLastLogin(),
+                that.getLastLogin()) && Objects.equals(getSimpleTestEntity(), that.getSimpleTestEntity());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getLastName(), getHeight(), getAge(), getLastLogin(), getSimpleTestEntity());
     }
 }

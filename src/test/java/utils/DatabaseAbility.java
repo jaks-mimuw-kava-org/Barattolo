@@ -44,10 +44,10 @@ public class DatabaseAbility {
     }
 
     protected void addToDatabase(ComplexTestEntity complexTestEntity) {
-        String query = ("INSERT INTO ComplexTestEntity(name, last, height, age, lastLogin) " +
-                "VALUES ('%s', '%s', %d, %d, '%s')")
+        String query = ("INSERT INTO ComplexTestEntity(name, last, height, age, lastLogin, simple_test_entity) " +
+                "VALUES ('%s', '%s', %d, %d, '%s', %d)")
                 .formatted(complexTestEntity.getName(), complexTestEntity.getLastName(), complexTestEntity.getHeight(),
-                        complexTestEntity.getAge(), complexTestEntity.getLastLogin().toString());
+                        complexTestEntity.getAge(), complexTestEntity.getLastLogin().toString(), complexTestEntity.getSimpleTestEntity().getId());
         addToDatabase(query);
     }
 
@@ -86,16 +86,22 @@ public class DatabaseAbility {
         String query = "SELECT * FROM ComplexTestEntity";
         List<ComplexTestEntity> entities = new ArrayList<>();
 
+        List<SimpleTestEntity> simpleTestEntities = getSimpleEntitiesFromDatabase();
+
         try {
             ResultSet resultSet = getFromDatabase(query);
             while (resultSet.next()) {
+                System.out.println(simpleTestEntities);
+                Long simpleTestEntityId = resultSet.getLong("simple_test_entity");
+                SimpleTestEntity simpleTestEntity = simpleTestEntities.stream()
+                        .filter(it -> it.getId().equals(simpleTestEntityId)).findFirst().orElseGet(null);
                 ComplexTestEntity entity = new ComplexTestEntity(
                         resultSet.getString("name"),
                         resultSet.getString("last"),
                         resultSet.getLong("height"),
                         resultSet.getInt("age"),
-                        resultSet.getDate("lastLogin")
-                );
+                        resultSet.getDate("lastLogin"),
+                        simpleTestEntity);
 
                 entities.add(entity);
             }

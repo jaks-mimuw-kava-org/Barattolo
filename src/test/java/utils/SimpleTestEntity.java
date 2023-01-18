@@ -44,7 +44,7 @@ public class SimpleTestEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SimpleTestEntity)) return false;
         SimpleTestEntity that = (SimpleTestEntity) o;
         return getId().equals(that.getId()) && getName().equals(that.getName());
     }

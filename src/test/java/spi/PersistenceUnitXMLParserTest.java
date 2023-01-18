@@ -25,5 +25,6 @@ public class PersistenceUnitXMLParserTest {
         assertEquals("jdbc:postgresql://localhost/test", persistenceUnitInfo.getProperties().getProperty("jakarta.persistence.jdbc.url"));
         assertEquals("admin", persistenceUnitInfo.getProperties().getProperty("jakarta.persistence.jdbc.user"));
         assertEquals("admin", persistenceUnitInfo.getProperties().getProperty("jakarta.persistence.jdbc.password"));
+        assertEquals("DEBUG", persistenceUnitInfo.getProperties().getProperty("org.kava.barattolo.logger.level"));
     }
 }

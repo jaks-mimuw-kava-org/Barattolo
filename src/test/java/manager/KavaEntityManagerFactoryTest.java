@@ -6,6 +6,7 @@ import org.kava.barattolo.config.DriverConfig;
 import org.kava.barattolo.config.ManagedClassesConfig;
 import org.kava.barattolo.manager.KavaEntityManagerFactory;
 import org.junit.jupiter.api.Test;
+import org.kava.lungo.Level;
 import utils.DatabaseAbility;
 
 
@@ -22,7 +23,12 @@ public class KavaEntityManagerFactoryTest extends DatabaseAbility {
         ManagedClassesConfig managedClassesConfig = new ManagedClassesConfig(TEST_MANAGED_CLASSES);
 
         // when
-        EntityManager entityManager = new KavaEntityManagerFactory(driverConfig, connectionConfig, managedClassesConfig)
+        EntityManager entityManager = new KavaEntityManagerFactory(
+                driverConfig,
+                connectionConfig,
+                managedClassesConfig,
+                Level.DEBUG
+        )
                 .createEntityManager();
 
         // then
