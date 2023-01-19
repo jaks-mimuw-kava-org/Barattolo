@@ -4,9 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import org.kava.lungo.Level;
-import org.kava.lungo.Logger;
-import org.kava.lungo.LoggerFactory;
 
 import java.lang.reflect.Field;
 
