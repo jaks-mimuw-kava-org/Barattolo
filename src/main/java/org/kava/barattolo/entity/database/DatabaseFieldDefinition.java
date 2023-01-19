@@ -20,13 +20,19 @@ public record DatabaseFieldDefinition(
         return new DatabaseField(this, value);
     }
 
+    public DatabaseField getValue(Object entity) {
+        try {
+            return this.withValue(field.get(entity));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public boolean isComplexField() {
         return fieldType != DatabaseFieldType.FIELD && fieldType != DatabaseFieldType.PRIMARY_KEY;
     }
 
     public boolean isPrimaryKey() {
-        Logger logger = LoggerFactory.getLogger(DatabaseFieldDefinition.class, Level.DEBUG);
-        logger.debug("Is %s primary key? %s", this, this.fieldType == DatabaseFieldType.PRIMARY_KEY);
         return this.fieldType == DatabaseFieldType.PRIMARY_KEY;
     }
 
@@ -45,15 +51,11 @@ public record DatabaseFieldDefinition(
     }
 
     private static DatabaseFieldType retrieveFieldType(Field field) {
-        Logger logger = LoggerFactory.getLogger(DatabaseFieldDefinition.class, Level.DEBUG);
         if (isPrimaryKey(field)) {
-            logger.debug("%s is primary key.", field.getName());
             return DatabaseFieldType.PRIMARY_KEY;
         } else if (isForeignKey(field)) {
-            logger.debug("%s is foreign key.", field.getName());
             return DatabaseFieldType.FOREIGN_KEY;
         } else {
-            logger.debug("%s is a normal field.", field.getName());
             return DatabaseFieldType.FIELD;
         }
     }
