@@ -26,7 +26,7 @@ public record DatabaseFieldDefinition(
 
     public boolean isPrimaryKey() {
         Logger logger = LoggerFactory.getLogger(DatabaseFieldDefinition.class, Level.DEBUG);
-        logger.debug("Is {} primary key? {}", this, this.fieldType == DatabaseFieldType.PRIMARY_KEY);
+        logger.debug("Is %s primary key? %s", this, this.fieldType == DatabaseFieldType.PRIMARY_KEY);
         return this.fieldType == DatabaseFieldType.PRIMARY_KEY;
     }
 
@@ -47,13 +47,13 @@ public record DatabaseFieldDefinition(
     private static DatabaseFieldType retrieveFieldType(Field field) {
         Logger logger = LoggerFactory.getLogger(DatabaseFieldDefinition.class, Level.DEBUG);
         if (isPrimaryKey(field)) {
-            logger.debug("{} is primary key.", field.getName());
+            logger.debug("%s is primary key.", field.getName());
             return DatabaseFieldType.PRIMARY_KEY;
         } else if (isForeignKey(field)) {
-            logger.debug("{} is foreign key.", field.getName());
+            logger.debug("%s is foreign key.", field.getName());
             return DatabaseFieldType.FOREIGN_KEY;
         } else {
-            logger.debug("{} is a normal field.", field.getName());
+            logger.debug("%s is a normal field.", field.getName());
             return DatabaseFieldType.FIELD;
         }
     }
