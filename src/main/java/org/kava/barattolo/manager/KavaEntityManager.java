@@ -64,12 +64,14 @@ public class KavaEntityManager implements EntityManager {
 
     @Override
     public void remove(Object entity) {
-        DatabaseEntity databaseEntity = DatabaseEntity.of(entity);
+        DatabaseEntityDefinition databaseEntityDefinition = DatabaseEntityDefinition.of(entity.getClass());
+        DatabaseFieldDefinition primaryKeyDefinition = databaseEntityDefinition.getPrimaryKey();
+        DatabaseField primaryKeyField = primaryKeyDefinition.getValue(entity);
 
         try (Connection connection = createConnection();
              PreparedStatement statement = new DeleteQueryBuilder()
-                     .withTable(databaseEntity.tableName())
-                     .withPrimaryKey(databaseEntity.getPrimaryKey())
+                     .withTable(databaseEntityDefinition.tableName())
+                     .withPrimaryKey(primaryKeyField)
                      .build(connection)) {
             statement.execute();
             logQuery(statement.toString());

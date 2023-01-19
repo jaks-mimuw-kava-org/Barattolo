@@ -12,8 +12,17 @@ public record DatabaseFieldDefinition(
         String name,
         DatabaseFieldType fieldType
 ) {
+
     public DatabaseField withValue(Object value) {
         return new DatabaseField(this, value);
+    }
+
+    public DatabaseField getValue(Object entity) {
+        try {
+            return this.withValue(field.get(entity));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isComplexField() {
