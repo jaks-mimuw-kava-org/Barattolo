@@ -4,6 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import org.kava.lungo.Level;
+import org.kava.lungo.Logger;
+import org.kava.lungo.LoggerFactory;
 
 import java.lang.reflect.Field;
 
@@ -12,6 +15,7 @@ public record DatabaseFieldDefinition(
         String name,
         DatabaseFieldType fieldType
 ) {
+
     public DatabaseField withValue(Object value) {
         return new DatabaseField(this, value);
     }
@@ -21,6 +25,8 @@ public record DatabaseFieldDefinition(
     }
 
     public boolean isPrimaryKey() {
+        Logger logger = LoggerFactory.getLogger(DatabaseFieldDefinition.class, Level.DEBUG);
+        logger.debug("Is {} primary key? {}", this, this.fieldType == DatabaseFieldType.PRIMARY_KEY);
         return this.fieldType == DatabaseFieldType.PRIMARY_KEY;
     }
 
@@ -39,11 +45,15 @@ public record DatabaseFieldDefinition(
     }
 
     private static DatabaseFieldType retrieveFieldType(Field field) {
+        Logger logger = LoggerFactory.getLogger(DatabaseFieldDefinition.class, Level.DEBUG);
         if (isPrimaryKey(field)) {
+            logger.debug("{} is primary key.", field.getName());
             return DatabaseFieldType.PRIMARY_KEY;
         } else if (isForeignKey(field)) {
+            logger.debug("{} is foreign key.", field.getName());
             return DatabaseFieldType.FOREIGN_KEY;
         } else {
+            logger.debug("{} is a normal field.", field.getName());
             return DatabaseFieldType.FIELD;
         }
     }
